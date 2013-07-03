@@ -112,7 +112,7 @@ host_mapping.close()
 
 # Concatenate to /etc/hosts
 dns_mapping = open('/etc/hosts', 'w')
-dns_mapping.write('127.0.0.1       localhost\n128.30.76.203   copley.csail.mit.edu    copley\n \n')
+dns_mapping.write('127.0.0.1       localhost\n128.30.76.203   copley.csail.mit.edu    copley\n 127.0.1.1 skypealpha-ThinkCentre-M91p \n')
 for entry in open('ips.txt'):
   dns_mapping.write(entry)
 
