@@ -61,7 +61,7 @@ for line in open(getinfo):
     apache_conf_fh.close()
 
   #directories to be made for wget
-  resource_directory = mirror_root
+  resource_directory = mirror_path
   for i in range(1, len(resource_folders)-1):
     # start from 1 because 0 is hostname
     # end at -1 because the last entry is the file itself
