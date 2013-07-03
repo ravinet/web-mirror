@@ -30,4 +30,6 @@ python web_mirror_record.py tempgets.txt $folder `pwd`
 python web_mirror_replay.py $folder `pwd`
 
 # restore
+cd /etc/apache2/sites-available
 cp default.backup default
+cd -
