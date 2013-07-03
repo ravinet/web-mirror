@@ -102,6 +102,7 @@ for line in open(getinfo):
 
 # Close Mininet Config 
 mininet_cfg.close()
+host_mapping.close()
 
 # Concatenate to /etc/hosts
 dns_mapping = open('/etc/hosts', 'w')
@@ -111,9 +112,6 @@ for entry in open('ips.txt'):
 
 dns_mapping.write('\n\n# The following lines are desirable for IPv6 capable hosts\n::1     ip6-localhost ip6-loopback\nfe00::0 ip6-localnet\nff00::0 ip6-mcastprefix\nff02::1 ip6-allnodes\nff02::2 ip6-allrouters')
 dns_mapping.close()
-
-# Close host mapping
-host_mapping.close()
 
 # Save mirror setup for posterity
 os.system("rm -rf "+mirror_root);
