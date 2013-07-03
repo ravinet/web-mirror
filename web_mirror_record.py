@@ -21,6 +21,9 @@ count = 0
 
 mirror_path = '/var/www/' + str(mirror_root)
 
+# remove old vestiges
+os.system("rm -rf "+mirror_path);
+
 # Parse gets.txt
 for line in open(getinfo):
   records          = line.split(' ')
