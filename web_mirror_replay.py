@@ -71,7 +71,8 @@ if __name__ == '__main__':
       server_names[i].waitOutput()
       server_names[i].sendCmd('route add default dev server'+str(i)+'-eth0')   
       server_names[i].waitOutput()
-      server_names[i].sendCmd(current_working_dir+'/start_apache.sh ' + str(i))
+      http_root = "/var/www/" + sys.argv[1]
+      server_names[i].cmdPrint('nohup python '+current_working_dir+'/simple-http.py ' + ip_addr[i]+' '+http_root+'&')
       server_names[i].waitOutput()
 
 
