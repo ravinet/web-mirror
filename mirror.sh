@@ -15,7 +15,8 @@ sudo ./clean_up_mn.sh
 
 # kill apache
 sudo service apache2 stop
-sudo killall -s9 apache
+sudo killall -s9 apache2
+sudo killall -s9 python
 
 # Modify root folder
 cd /etc/apache2/sites-available
@@ -30,7 +31,7 @@ $PHANTOMJS/bin/phantomjs $PHANTOMJS/examples/get_info.js $site > tempgets.txt
 python web_mirror_record.py tempgets.txt $folder `pwd`
 #sleep 1
 #run mininet
-python web_mirror_replay.py $folder `pwd`
+python web_mirror_replay.py $folder `pwd` $site $PHANTOMJS
 
 # restore
 cd /etc/apache2/sites-available
