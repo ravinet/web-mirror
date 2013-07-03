@@ -3,11 +3,14 @@ import os
 import shutil
 #apac = open('etc/apache2/apache2.conf', 'a')
 # file name with gets and ips
-getinfo = str(sys.argv[1])
+getinfo = sys.argv[1]
 print getinfo
 
 # root folder to save in
-mirror_root = str(sys.argv[2])
+mirror_root = sys.argv[2]
+
+# working directory
+working_dir = sys.argv[3]
 
 # keep track of distinct IPs in gets file for etc/hosts
 ips = []
@@ -101,7 +104,7 @@ for line in open(getinfo):
   os.system("wget \"" + str(fetch_url) + "\"")
 
   # Change directory back to original directory
-  os.chdir("/home/ravinet/mininet/sharding")
+  os.chdir(working_dir)
 
 # Close Mininet Config 
 mininet_cfg.close()
