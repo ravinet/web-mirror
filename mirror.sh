@@ -10,6 +10,9 @@ rm -rf $folder
 rm -rf /var/www/$folder
 mkdir /var/www/$folder
 
+# Clean up Mininet
+sudo ./clean_up_mn.sh
+
 # kill apache
 sudo service apache2 stop
 sudo killall -s9 apache
