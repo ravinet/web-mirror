@@ -1,6 +1,9 @@
 #! /bin/bash
-set -x
-set -v
+if [ $# -lt 2 ]; then
+  echo "Usage : Enter site to mirror and mirror destination folder"
+  exit 5
+fi;
+PHANTOMJS=/home/skype-alpha/July3rdGoogleMeeting/phantomjs/
 site=$1
 folder=$2
 rm -rf $folder
@@ -18,10 +21,10 @@ cd -
 
 
 ##run phantomjs get_info to create file for website with urls+ips
-/home/ravinet/testphantomJS/phantomjs/bin/phantomjs /home/ravinet/testphantomJS/phantomjs/examples/get_info.js $site > tempgets.txt
+$PHANTOMJS/bin/phantomjs $PHANTOMJS/examples/get_info.js $site > tempgets.txt
 #
 ##run script to create file to add to /etc/hosts (ips.txt) and create directories according to url paths and fill them with wget objects
-python web_mirror_record.py tempgets.txt $folder
+python web_mirror_record.py tempgets.txt $folder `pwd`
 #sleep 1
 #run mininet
 python web_mirror.py $folder
