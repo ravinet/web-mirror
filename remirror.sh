@@ -5,7 +5,4 @@ site=$1
 python reset_mirror.py $site
 
 #run mininet
-python web_mirror.py $site
-
-
- 
+python web_mirror_replay.py $site

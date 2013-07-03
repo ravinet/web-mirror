@@ -11,7 +11,6 @@ from mininet.link import Link
 
 import os
 import sys
-#TODO: Read from file or use Python's source command
 if (len(sys.argv) == 0):
   ifile = 'serverips.txt'
 else:
@@ -20,12 +19,8 @@ else:
 ip_addr=[]
 for f in open(ifile):
   ip_addr.append(f.strip())
-#ip_addr = ['']*4
-#ip_addr[0] = '128.30.2.155'
-#ip_addr[1] = '74.125.228.4'
-#ip_addr[2] = '74.125.228.9'
-#ip_addr[3] = '74.125.228.1'
 
+current_working_dir=sys.argv[2]
 #################################
 class ProtoTester(Topo):
     def __init__(self):
@@ -76,7 +71,7 @@ if __name__ == '__main__':
       server_names[i].waitOutput()
       server_names[i].sendCmd('route add default dev server'+str(i)+'-eth0')   
       server_names[i].waitOutput()
-      server_names[i].sendCmd('/home/ravinet/start_apache.sh ' + str(i))
+      server_names[i].sendCmd(current_working_dir+'/start_apache.sh ' + str(i))
       server_names[i].waitOutput()
 
 

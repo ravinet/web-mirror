@@ -27,7 +27,7 @@ $PHANTOMJS/bin/phantomjs $PHANTOMJS/examples/get_info.js $site > tempgets.txt
 python web_mirror_record.py tempgets.txt $folder `pwd`
 #sleep 1
 #run mininet
-python web_mirror.py $folder
+python web_mirror_replay.py $folder `pwd`
 
 # restore
 cp default.backup default
