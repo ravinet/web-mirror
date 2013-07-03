@@ -21,6 +21,9 @@ for f in open(ifile):
   ip_addr.append(f.strip())
 
 current_working_dir=sys.argv[2]
+site_to_fetch=sys.argv[3]
+phantomjs_root=sys.argv[4]
+
 #################################
 class ProtoTester(Topo):
     def __init__(self):
@@ -72,12 +75,14 @@ if __name__ == '__main__':
       server_names[i].sendCmd('route add default dev server'+str(i)+'-eth0')   
       server_names[i].waitOutput()
       http_root = "/var/www/" + sys.argv[1]
-      server_names[i].cmdPrint('nohup python '+current_working_dir+'/simple-http.py ' + ip_addr[i]+' '+http_root+' &')
+      server_names[i].cmdPrint('nohup '+current_working_dir+'/simple-http.py ' + ip_addr[i]+' '+http_root+' &')
       server_names[i].waitOutput()
 
 
     print "*** Hosts are running and can talk to each other"
     print "*** Type 'exit' or control-D to shut down network"
+    client.cmdPrint(phantomjs_root+'/bin/phantomjs '+phantomjs_root+'/examples/loadspeed.js '+site_to_fetch);
+    client.waitOutput()
     CLI( net )
     os.system( "cp /etc/hosts_original /etc/hosts" )
     for u in range(0, len(ip_addr)):
