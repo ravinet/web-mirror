@@ -16,7 +16,7 @@ sudo ./clean_up_mn.sh
 # kill apache
 sudo service apache2 stop
 sudo killall -s9 apache2
-sudo killall -s9 python
+sudo killall -s9 /usr/bin/python
 
 # Modify root folder
 cd /etc/apache2/sites-available
