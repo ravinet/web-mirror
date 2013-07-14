@@ -18,7 +18,7 @@ sudo service apache2 stop
 sudo killall -s9 apache2
 sudo killall -s9 /usr/bin/python
 
-# Modify root folder
+Modify root folder
 cd /etc/apache2/sites-available
 sed s/"DocumentRoot \/var\/www"/"DocumentRoot \/var\/www\/$folder"/g default.backup > default
 cd -

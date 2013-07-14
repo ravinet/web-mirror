@@ -75,8 +75,11 @@ if __name__ == '__main__':
       server_names[i].sendCmd('route add default dev server'+str(i)+'-eth0')   
       server_names[i].waitOutput()
       http_root = "/var/www/" + sys.argv[1]
-      server_names[i].cmdPrint('nohup '+current_working_dir+'/simple-http.py ' + ip_addr[i]+' '+http_root+' &')
+      #server_names[i].cmdPrint('nohup '+current_working_dir+'/simple-http.py ' + ip_addr[i]+' '+http_root+' &')
+      #server_names[i].waitOutput()
+      server_names[i].cmdPrint('./start_apache.sh ' + str(i))
       server_names[i].waitOutput()
+
 
 
     print "*** Hosts are running and can talk to each other"
