@@ -12,6 +12,9 @@ rm -rf $folder
 rm -rf /var/www/$folder
 mkdir /var/www/$folder
 
+# Disable Apache's tendency to start on port 80 of host machine
+cp ports.conf /etc/apache2/
+
 # Tell Network Manager to shut up
 service network-manager stop
 
@@ -28,6 +31,10 @@ sysctl net.ipv6.conf.all.disable_ipv6=1
 sysctl net.ipv6.conf.default.disable_ipv6=1
 sysctl net.ipv6.conf.lo.disable_ipv6=1
 
+# Kill apache
+sudo service apache2 stop
+sudo killall -s9 apache2
+
 # Clean up Mininet
 sudo ./clean_up_mn.sh
 sudo killall -s9 /usr/bin/python
@@ -43,3 +50,6 @@ python web_mirror_record.py tempgets.txt $folder `pwd` $hostname
 
 #run mininet
 python web_mirror_replay.py $folder `pwd` $site $PHANTOMJS
+
+#restore apache default
+cp default.backup /etc/apache2/sites-available/default

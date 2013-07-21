@@ -53,6 +53,8 @@ if __name__ == '__main__':
     # Configure and start NATted connectivity
     os.system( "killall -q controller" )
     os.system( "killall -q phantomjs" )
+    os.system( "/etc/init.d/apache2 stop" )
+    os.system( "killall -s9 apache2" )
     topo = ProtoTester()
     net = Mininet(topo=topo, host=Host, link=Link)
     net.start()
@@ -73,12 +75,13 @@ if __name__ == '__main__':
       server_names[i].sendCmd('route add default dev server'+str(i)+'-eth0')   
       server_names[i].waitOutput()
       http_root = "/var/www/" + sys.argv[1]
-      server_names[i].cmdPrint('nohup '+current_working_dir+'/simple-http.py ' + ip_addr[i]+' '+http_root+' &')
+      server_names[i].cmdPrint('./start_apache.sh ' + str(i))
       server_names[i].waitOutput()
-
 
     print "*** Hosts are running and can talk to each other"
     print "*** Type 'exit' or control-D to shut down network"
     client.cmdPrint(phantomjs_root+'/bin/phantomjs '+phantomjs_root+'/examples/loadspeed.js '+site_to_fetch);
     client.waitOutput()
     CLI( net )
+    for u in range(0, len(ip_addr)):
+      os.system( "rm /etc/apache2/apache2" + str(u) + ".conf")

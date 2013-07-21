@@ -65,6 +65,14 @@ for line in open(getinfo):
     # Add to list of IPs for Mininet
     mininet_cfg.write(str(ip.strip()) + '\n')
 
+    # Create conf file for sharded server
+    apache_conf_filename = '/etc/apache2/apache2' + str(count) + '.conf'
+    shutil.copy('apache2.tmpl', apache_conf_filename)
+    count = count + 1
+    apache_conf_fh = open(apache_conf_filename, 'a')
+    apache_conf_fh.write('\nListen ' + str(ip.strip()) + ':80')
+    apache_conf_fh.close()
+
   #directories to be made for wget
   resource_directory = mirror_path
   for i in range(1, len(resource_folders)-1):
