@@ -18,6 +18,14 @@ sudo service apache2 stop
 sudo killall -s9 apache2
 sudo killall -s9 /usr/bin/python
 
+# Ensure dnsmasq is running
+sudo service dnsmasq status
+retcode=$?
+if [ $retcode -ne 0 ]; then
+  echo "dnsmasq is not running. Exiting"
+  exit 5
+fi;
+
 # Modify root folder
 cd /etc/apache2/sites-available
 sed s/"DocumentRoot \/var\/www"/"DocumentRoot \/var\/www\/$folder"/g default.backup > default
