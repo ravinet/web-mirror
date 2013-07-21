@@ -53,3 +53,6 @@ python web_mirror_replay.py $folder `pwd` $site $PHANTOMJS
 
 #restore apache default
 cp default.backup /etc/apache2/sites-available/default
+
+#Be nice, and restore original etc_hosts file
+echo -e "127.0.0.1 localhost\n127.0.1.1 $hostname" > /etc/hosts
