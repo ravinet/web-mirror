@@ -53,8 +53,6 @@ if __name__ == '__main__':
     # Configure and start NATted connectivity
     os.system( "killall -q controller" )
     os.system( "killall -q phantomjs" )
-    os.system( "/etc/init.d/apache2 stop" )
-    os.system( "killall -s9 apache2" )
     topo = ProtoTester()
     net = Mininet(topo=topo, host=Host, link=Link)
     net.start()
@@ -84,6 +82,3 @@ if __name__ == '__main__':
     client.cmdPrint(phantomjs_root+'/bin/phantomjs '+phantomjs_root+'/examples/loadspeed.js '+site_to_fetch);
     client.waitOutput()
     CLI( net )
-    os.system( "cp /etc/hosts_original /etc/hosts" )
-    for u in range(0, len(ip_addr)):
-      os.system( "rm /etc/apache2/apache2" + str(u) + ".conf")

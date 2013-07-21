@@ -1,16 +1,23 @@
 import sys
 import os
 import shutil
-#apac = open('etc/apache2/apache2.conf', 'a')
+
+# check cmd line
+if (len(sys.argv) < 5):
+  print "Usage: Enter getinfo, mirror_root, working_dir, and hostname\n"
+  exit(5)
+
 # file name with gets and ips
 getinfo = sys.argv[1]
-print getinfo
 
 # root folder to save in
 mirror_root = sys.argv[2]
 
 # working directory
 working_dir = sys.argv[3]
+
+# hostname
+hostname= sys.argv[4]
 
 # keep track of distinct IPs in gets file for etc/hosts
 ips = []
@@ -58,14 +65,6 @@ for line in open(getinfo):
     # Add to list of IPs for Mininet
     mininet_cfg.write(str(ip.strip()) + '\n')
 
-    # Create conf file for sharded server
-    apache_conf_filename = '/etc/apache2/apache2' + str(count) + '.conf'
-    shutil.copy('/etc/apache2/apache2.tmpl', apache_conf_filename)
-    count = count + 1
-    apache_conf_fh = open(apache_conf_filename, 'a')
-    apache_conf_fh.write('\nListen ' + str(ip.strip()) + ':80')
-    apache_conf_fh.close()
-
   #directories to be made for wget
   resource_directory = mirror_path
   for i in range(1, len(resource_folders)-1):
@@ -112,12 +111,9 @@ host_mapping.close()
 
 # Concatenate to /etc/hosts
 dns_mapping = open('/etc/hosts', 'w')
-dns_mapping.write('127.0.0.1       localhost\n128.30.76.203   copley.csail.mit.edu    copley\n 127.0.1.1 skypealpha-ThinkCentre-M91p \n')
+dns_mapping.write('127.0.0.1       localhost\n127.0.1.1 '+str(hostname)+'\n')
 for entry in open('ips.txt'):
   dns_mapping.write(entry)
-
-dns_mapping.write('\n\n# The following lines are desirable for IPv6 capable hosts\n::1     ip6-localhost ip6-loopback\nfe00::0 ip6-localnet\nff00::0 ip6-mcastprefix\nff02::1 ip6-allnodes\nff02::2 ip6-allrouters')
-dns_mapping.close()
 
 # Save mirror setup for posterity
 os.system("rm -rf "+mirror_root);
