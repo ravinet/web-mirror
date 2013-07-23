@@ -23,7 +23,8 @@ for f in open(ifile):
 current_working_dir=sys.argv[2]
 site_to_fetch=sys.argv[3]
 phantomjs_root=sys.argv[4]
-
+path_addition=sys.argv[5]
+chrome_path=sys.argv[6]
 #################################
 class ProtoTester(Topo):
     def __init__(self):
@@ -80,7 +81,13 @@ if __name__ == '__main__':
 
     print "*** Hosts are running and can talk to each other"
     print "*** Type 'exit' or control-D to shut down network"
+
+# TODO: Run this on client 
+    client.cmdPrint('/usr/sbin/dnsmasq -x /var/run/dnsmasq.pid -7 /etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new -8 /var/dnsmasq.log -k --log-queries --except-interface eth1 &')
+    client.waitOutput()
     client.cmdPrint(phantomjs_root+'/bin/phantomjs '+phantomjs_root+'/examples/loadspeed.js '+site_to_fetch);
+    client.waitOutput()
+    client.cmdPrint('su ravinent -c"PATH=$PATH:' + path_addition + ' CHROME_DEVEL_SANDBOX=' + chrome_path + ' python load_google.py"')
     client.waitOutput()
     CLI( net )
     for u in range(0, len(ip_addr)):
