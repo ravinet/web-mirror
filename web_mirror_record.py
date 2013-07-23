@@ -23,6 +23,9 @@ hostname= sys.argv[4]
 ips = []
 host_mapping = open('ips.txt', 'w')
 
+# keep track of domain names to determine unique domain names
+domain_names = []
+
 # File with list of IPs for Mininet setup
 mininet_cfg  = open('serverips.txt','w')
 
@@ -55,12 +58,14 @@ for line in open(getinfo):
   print "Domain name", domain_name
   print "resource_folders", resource_folders
 
+  # Add to host mapping file for DNS, if domain_name isn't in file
+  if domain_name not in domain_names:
+    domain_names.append(domain_name)
+    host_mapping.write(str(ip.strip()) + ' ' + domain_name + '\n')
+
   if ip not in ips:
     # Saw distinct IP
     ips.append(ip)
-
-    # Add to host mapping file for DNS
-    host_mapping.write(str(ip.strip()) + ' ' + domain_name + '\n')
 
     # Add to list of IPs for Mininet
     mininet_cfg.write(str(ip.strip()) + '\n')
