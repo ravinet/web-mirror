@@ -1,0 +1,16 @@
+1. Install Mininet. DONE
+2. Install phatnomjs. DOING
+Fix fontconfig, and freetype errors later.
+3. Install Apache. DONE
+4. Install SimpleHTTP. DONE
+5. Is dnsmasq actually ever required? Not required
+6. Mirror using SimpleHTTP.
+7. Automate ipv6 disabling.
+8. chromeOS fonts need to be disabled.
+9. Install chrome- must copy folder contents and delete folder...also must add path for binary and sandbox (CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox)
+10. modify chrome src/net/tools/quic/quic_server_bin.cc to accept parameters for ip addr and port.
+
+Selenium instructions
+1. install chrome driver and add path for where driver is to bashrc
+2. sudo pip install selenium
+3. install PyVirtualDisplay
