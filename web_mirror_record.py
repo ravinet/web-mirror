@@ -19,9 +19,9 @@ working_dir = sys.argv[3]
 # hostname
 hostname= sys.argv[4]
 
-# keep track of distinct IPs in gets file for etc/hosts
+# keep track of distinct IPs in gets file for etc/hosts in VM
 ips = []
-host_mapping = open('ips.txt', 'w')
+host_mapping = open('dns-mappings.txt', 'w')
 
 # keep track of domain names to determine unique domain names
 domain_names = []
@@ -32,7 +32,7 @@ mininet_cfg  = open('serverips.txt','w')
 # Number of distinct IPs
 count = 0
 
-mirror_path = '/var/www/' + str(mirror_root)
+mirror_path = 'mirror-folder/' + str(mirror_root)
 
 # remove old vestiges
 os.system("rm -rf "+mirror_path);
@@ -69,14 +69,7 @@ for line in open(getinfo):
 
     # Add to list of IPs for Mininet
     mininet_cfg.write(str(ip.strip()) + '\n')
-
-    # Create conf file for sharded server
-    apache_conf_filename = '/etc/apache2/apache2' + str(count) + '.conf'
-    shutil.copy('apache2.tmpl', apache_conf_filename)
     count = count + 1
-    apache_conf_fh = open(apache_conf_filename, 'a')
-    apache_conf_fh.write('\nListen ' + str(ip.strip()) + ':80')
-    apache_conf_fh.close()
 
   #directories to be made for wget
   resource_directory = mirror_path
@@ -123,17 +116,7 @@ mininet_cfg.close()
 host_mapping.close()
 
 # Concatenate to /etc/hosts
-dns_mapping = open('/etc/hosts', 'w')
+dns_mapping = open('mapping.expt', 'w')
 dns_mapping.write('127.0.0.1       localhost\n127.0.1.1 '+str(hostname)+'\n')
-for entry in open('ips.txt'):
+for entry in open('dns-mappings.txt'):
   dns_mapping.write(entry)
-
-# Save mirror setup for posterity
-os.system("rm -rf "+mirror_root);
-os.makedirs(mirror_root)
-saveip = mirror_root + '/' + mirror_root + 'ips.txt'
-savegets = mirror_root + '/' + mirror_root + 'gets.txt'
-saveserverips = mirror_root + '/' + mirror_root + 'serverips.txt'
-shutil.copy('ips.txt', saveip)
-shutil.copy('tempgets.txt', savegets)
-shutil.copy('serverips.txt', saveserverips)
