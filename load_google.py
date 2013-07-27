@@ -9,8 +9,11 @@ import os
 
 options=Options()
 options._binary_location = '/home/ravinent/src/out/Release/chrome'
-
 #eliminate needing to show display of chrome loading page
+#options.add_argument("--no-proxy-server")
+#options.add_argument("--user-data-dir=/tmp/myprofdir")
+#options.add_argument("--enable-quic")
+#options.add_argument("--origin-to-force-quic-on=localhost:80")
 display = Display(visible=0, size=(800,600))
 display.start()
 driver=webdriver.Chrome(chrome_options=options)
