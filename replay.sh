@@ -9,6 +9,14 @@ fi
 # Exterminate old versions of Mininet
 ./clean_up_mn.sh
 
+# Kill old residues
+sudo killall -s9 /usr/bin/python
+sudo killall -s9 quic_server
+sudo killall -s9 Xvfb
+sudo killall -s9 dnsmasq
+sudo service apache2 stop
+sudo killall -s9 apache2
+
 # cmdline args
 hostmapping=$1
 mirror_folder=$2
