@@ -19,16 +19,17 @@ automatn_script=$5
 site_to_fetch="http://$mirror_folder"
 
 # Rewrite /etc/hosts
-cp $hostmapping /etc/hosts
+scp $hostmapping /etc/hosts
 
 # Copy mirrored folder to resting place
-cp -r $mirror_folder /var/www
+scp -r $mirror_folder /var/www
 
 # Modify Apache Root
 sed s/"DocumentRoot \/var\/www"/"DocumentRoot \/var\/www\/$folder"/g default.backup > /etc/apache2/sites-available/default
 
 # Run Mininet
-python web_mirror_replay.py $server_ips `pwd` $site_to_fetch $phantomjs $automatn_script
+scp $server_ips server_ips.txt
+python web_mirror_replay.py server_ips.txt `pwd` $site_to_fetch $phantomjs $automatn_script
 
 # Restore etc hosts
 cp hosts_default /etc/hosts
