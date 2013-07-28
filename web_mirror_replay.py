@@ -8,14 +8,11 @@ from mininet.topo import Topo
 from mininet.net import Mininet
 from mininet.node import Host
 from mininet.link import Link
-
+from mininet.node import OVSController
 import os
 import sys
-if (len(sys.argv) == 0):
-  ifile = 'serverips.txt'
-else:
-  c = str(sys.argv[1])
-  ifile = c + '/' + c + 'serverips.txt'
+
+ifile = sys.argv[1]
 ip_addr=[]
 for f in open(ifile):
   ip_addr.append(f.strip())
@@ -23,8 +20,7 @@ for f in open(ifile):
 current_working_dir=sys.argv[2]
 site_to_fetch=sys.argv[3]
 phantomjs_root=sys.argv[4]
-path_addition=sys.argv[5]
-chrome_path=sys.argv[6]
+automatn_script=sys.argv[5]
 #################################
 class ProtoTester(Topo):
     def __init__(self):
@@ -57,7 +53,7 @@ if __name__ == '__main__':
     os.system( "/etc/init.d/apache2 stop" )
     os.system( "killall -s9 apache2" )
     topo = ProtoTester()
-    net = Mininet(topo=topo, host=Host, link=Link)
+    net = Mininet(topo=topo, host=Host, link=Link, controller=OVSController)
     net.start()
 
     # Set /32 netmask and route for client
@@ -75,20 +71,14 @@ if __name__ == '__main__':
       server_names[i].waitOutput()
       server_names[i].sendCmd('route add default dev server'+str(i)+'-eth0')   
       server_names[i].waitOutput()
-      http_root = "/var/www/" + sys.argv[1]
-      server_names[i].cmdPrint('./start_apache.sh ' + str(i))
+      server_names[i].cmdPrint('apache2ctl -f /etc/apache2/apache2.conf ')
       server_names[i].waitOutput()
 
     print "*** Hosts are running and can talk to each other"
     print "*** Type 'exit' or control-D to shut down network"
 
-# TODO: Run this on client 
     client.cmdPrint('/usr/sbin/dnsmasq -x /var/run/dnsmasq.pid -7 /etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new -8 /var/dnsmasq.log -k --log-queries --except-interface eth1 &')
     client.waitOutput()
-    client.cmdPrint(phantomjs_root+'/bin/phantomjs '+phantomjs_root+'/examples/loadspeed.js '+site_to_fetch);
-    client.waitOutput()
-    client.cmdPrint('su ravinent -c"PATH=$PATH:' + path_addition + ' CHROME_DEVEL_SANDBOX=' + chrome_path + ' python load_google.py"')
+    client.cmdPrint(phantomjs_root+'/phantomjs '+automatn_script+" "+site_to_fetch);
     client.waitOutput()
     CLI( net )
-    for u in range(0, len(ip_addr)):
-      os.system( "rm /etc/apache2/apache2" + str(u) + ".conf")
