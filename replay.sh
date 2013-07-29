@@ -18,6 +18,9 @@ sudo killall -s9 dnsmasq
 sudo service apache2 stop
 sudo killall -s9 apache2
 
+# Remove old log
+sudo rm /var/dnsmasq.log
+
 # cmdline args
 site=$1
 hostmapping=$2
