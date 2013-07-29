@@ -3,21 +3,24 @@ import os
 import shutil
 
 # check cmd line
-if (len(sys.argv) < 5):
-  print "Usage: Enter getinfo, mirror_root, working_dir, and hostname\n"
+if (len(sys.argv) < 4):
+  print "Usage: Enter getinfo, mirror_folder, vmname, and congestion control\n"
   exit(5)
 
 # file name with gets and ips
 getinfo = sys.argv[1]
 
 # root folder to save in
-mirror_root = sys.argv[2]
+mirror_folder = sys.argv[2]
+
+# vmname
+vmname= sys.argv[3]
+
+# congestion control
+cc = sys.argv[4]
 
 # working directory
-working_dir = sys.argv[3]
-
-# hostname
-hostname= sys.argv[4]
+working_dir = os.getcwd()
 
 # keep track of distinct IPs in gets file for etc/hosts in VM
 ips = []
@@ -29,13 +32,13 @@ domain_names = []
 # File with list of IPs for Mininet setup
 mininet_cfg  = open('serverips.txt','w')
 
-# Number of distinct IPs
-count = 0
+#Number of resources
+resource_count = 0
 
-mirror_path = 'mirror-folder/' + str(mirror_root)
-
-# remove old vestiges
-os.system("rm -rf "+mirror_path);
+#make directory for flat quic directory
+if cc == 'quic':                                                
+  quic_dir = 'quic/' + mirror_folder
+  os.makedirs(quic_dir)
 
 # Parse gets.txt
 for line in open(getinfo):
@@ -47,16 +50,16 @@ for line in open(getinfo):
   resource_folder = ''
   if 'https' in scheme_plus_url:
     domain_name      = scheme_plus_url.split('https://')[1].split('/')[0]
-    resource_folders = scheme_plus_url.split('https://')[1].split('/')
+    request_uri = scheme_plus_url.split('https://')[1].split('/')
   elif 'http' in scheme_plus_url:
     domain_name      = scheme_plus_url.split('http://')[1].split('/')[0]
-    resource_folders = scheme_plus_url.split('http://')[1].split('/')
+    request_uri = scheme_plus_url.split('http://')[1].split('/')
   else :
     print "Die here. Found non HTTP/HTTPS"
     exit(5)
 
   print "Domain name", domain_name
-  print "resource_folders", resource_folders
+  print "request_uri", request_uri
 
   # Add to host mapping file for DNS, if domain_name isn't in file
   if domain_name not in domain_names:
@@ -69,14 +72,13 @@ for line in open(getinfo):
 
     # Add to list of IPs for Mininet
     mininet_cfg.write(str(ip.strip()) + '\n')
-    count = count + 1
 
   #directories to be made for wget
-  resource_directory = mirror_path
-  for i in range(1, len(resource_folders)-1):
-    # start from 1 because 0 is hostname
+  resource_directory = mirror_folder
+  for i in range(1, len(request_uri)-1):
+    # start from 1 because 0 is vmname
     # end at -1 because the last entry is the file itself
-    resource_directory = resource_directory + '/' + resource_folders[i]
+    resource_directory = resource_directory + '/' + request_uri[i]
 
   print "resource_directory",resource_directory
 
@@ -88,7 +90,7 @@ for line in open(getinfo):
   os.chdir(resource_directory)
 
   # Get name of resource
-  resource_name = resource_folders[-1]
+  resource_name = request_uri[-1]
 
   # Get rid of query parameters
   resource_name = resource_name.split('?')[0]
@@ -106,10 +108,17 @@ for line in open(getinfo):
   print "fetch_url",fetch_url,"\n"
 
   # Finally, fetch resource using wget
-  os.system("wget \"" + str(fetch_url) + "\"")
-
+  if cc == 'cubic':
+    os.system("wget \"" + str(fetch_url) + "\"")
+  elif cc == 'quic':
+    os.chdir(working_dir)
+    os.chdir(quic_dir)
+    os.system("wget -O resource" + str(resource_count) + " \"" + str(fetch_url) + "\"")
+  else:
+    exit(5)
   # Change directory back to original directory
   os.chdir(working_dir)
+  resource_count += 1
 
 # Close Mininet Config 
 mininet_cfg.close()
@@ -117,6 +126,6 @@ host_mapping.close()
 
 # Concatenate to /etc/hosts
 dns_mapping = open('mapping.expt', 'w')
-dns_mapping.write('127.0.0.1       localhost\n127.0.1.1 '+str(hostname)+'\n')
+dns_mapping.write('127.0.0.1       localhost\n127.0.1.1 '+str(vmname)+'\n')
 for entry in open('dns-mappings.txt'):
   dns_mapping.write(entry)

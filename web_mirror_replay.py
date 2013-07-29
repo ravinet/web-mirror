@@ -12,15 +12,17 @@ from mininet.node import OVSController
 import os
 import sys
 
-ifile = sys.argv[1]
+sharded_servers = sys.argv[1]
 ip_addr=[]
-for f in open(ifile):
-  ip_addr.append(f.strip())
+for server in open(sharded_servers):
+  ip_addr.append(server.strip())
 
-current_working_dir=sys.argv[2]
-site_to_fetch=sys.argv[3]
-phantomjs_root=sys.argv[4]
-automatn_script=sys.argv[5]
+site_to_fetch=sys.argv[2]
+phantomjs=sys.argv[3]
+quic_path=sys.argv[4]
+cc=sys.argv[5]
+browser=sys.argv[6]
+
 #################################
 class ProtoTester(Topo):
     def __init__(self):
@@ -52,6 +54,8 @@ if __name__ == '__main__':
     os.system( "killall -q phantomjs" )
     os.system( "/etc/init.d/apache2 stop" )
     os.system( "killall -s9 apache2" )
+    os.system( "killall -s9 quic_server" )
+    os.system( "rm -rf /home/vagrant/prof" )
     topo = ProtoTester()
     net = Mininet(topo=topo, host=Host, link=Link, controller=OVSController)
     net.start()
@@ -63,7 +67,8 @@ if __name__ == '__main__':
     client.sendCmd('route add default dev client-eth0')
     client.waitOutput()
    
-    # Set /32 netmask and route for all servers
+    # Set /32 netmask and route for all serversi
+    
     server_names = ['']*len(ip_addr)
     for i in range(0,len(ip_addr)):
       server_names[i] = net.getNodeByName('server'+str(i))
@@ -71,14 +76,29 @@ if __name__ == '__main__':
       server_names[i].waitOutput()
       server_names[i].sendCmd('route add default dev server'+str(i)+'-eth0')   
       server_names[i].waitOutput()
-      server_names[i].cmdPrint('apache2ctl -f /etc/apache2/apache2.conf ')
-      server_names[i].waitOutput()
+      if cc == 'cubic':
+        server_names[i].cmdPrint('apache2ctl -f /etc/apache2/apache2.conf ')
+      elif cc == 'quic':
+        server_names[i].cmdPrint('nohup ' + quic_path + ' --quic_in_memory_cache_dir0=' + quic_path + '/' + site_to_fetch + ' --port=80 --ip=' + ip_addr[i] + ' > /tmp/quic_server' + str(i)+'.stdout 2> /tmp/quic_server' + str(i) +'.stderr &')
+      else:
+        exit(5) 
+      server_names[i].waitOutput()        
 
     print "*** Hosts are running and can talk to each other"
     print "*** Type 'exit' or control-D to shut down network"
 
     client.cmdPrint('/usr/sbin/dnsmasq -x /var/run/dnsmasq.pid -7 /etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new -8 /var/dnsmasq.log -k --log-queries --except-interface eth1 &')
     client.waitOutput()
-    client.cmdPrint(phantomjs_root+'/phantomjs '+automatn_script+" "+site_to_fetch);
-    client.waitOutput()
+    if cc == 'cubic':
+      if browser == 'phantomjs':
+        client.cmdPrint(phantomjs+'/bin/phantomjs '+ phantomjs_root + "/examples/loadspeed.js " +site_to_fetch);
+      elif browser == 'chrome':
+        client.cmdPrint('su vagrant -c"python load_google.py"')
+      else:
+        exit(5)
+      client.waitOutput()
+    elif cc == 'quic':
+      client.cmdPrint('su vagrant -c"python load_google.py"')
+    else:
+      exit(5)
     CLI( net )
